@@ -16,9 +16,14 @@ const Index = () => {
             Smart appointment scheduling, AI-assisted treatment recommendations, and seamless practice management—all in one platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300">
+            <Link to="/auth">
+              <Button size="lg" className="text-lg px-8 shadow-elevated hover:scale-105 transition-transform">
+                Sign In / Sign Up <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Link to="/booking">
               <Button size="lg" variant="secondary" className="text-lg px-8 shadow-elevated hover:scale-105 transition-transform">
-                Book Appointment <ArrowRight className="ml-2 h-5 w-5" />
+                Book Appointment
               </Button>
             </Link>
             <Link to="/symptom-checker">

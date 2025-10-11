@@ -14,16 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          created_at: string
+          dentist_id: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          reason: string | null
+          status: Database["public"]["Enums"]["appointment_status"]
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          created_at?: string
+          dentist_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          reason?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          created_at?: string
+          dentist_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          reason?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          id: string
+          patient_id: string
+          reminder_type: string
+          scheduled_for: string
+          sent: boolean
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          id?: string
+          patient_id: string
+          reminder_type: string
+          scheduled_for: string
+          sent?: boolean
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          id?: string
+          patient_id?: string
+          reminder_type?: string
+          scheduled_for?: string
+          sent?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      treatments: {
+        Row: {
+          ai_confidence: number | null
+          ai_recommendation: string
+          appointment_id: string | null
+          created_at: string
+          dentist_notes: string | null
+          final_treatment: string | null
+          id: string
+          patient_id: string
+          status: Database["public"]["Enums"]["treatment_status"]
+          symptoms: string
+          updated_at: string
+        }
+        Insert: {
+          ai_confidence?: number | null
+          ai_recommendation: string
+          appointment_id?: string | null
+          created_at?: string
+          dentist_notes?: string | null
+          final_treatment?: string | null
+          id?: string
+          patient_id: string
+          status?: Database["public"]["Enums"]["treatment_status"]
+          symptoms: string
+          updated_at?: string
+        }
+        Update: {
+          ai_confidence?: number | null
+          ai_recommendation?: string
+          appointment_id?: string | null
+          created_at?: string
+          dentist_notes?: string | null
+          final_treatment?: string | null
+          id?: string
+          patient_id?: string
+          status?: Database["public"]["Enums"]["treatment_status"]
+          symptoms?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "dentist" | "patient"
+      appointment_status: "pending" | "confirmed" | "completed" | "cancelled"
+      treatment_status: "recommended" | "approved" | "modified" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +335,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "dentist", "patient"],
+      appointment_status: ["pending", "confirmed", "completed", "cancelled"],
+      treatment_status: ["recommended", "approved", "modified", "rejected"],
+    },
   },
 } as const

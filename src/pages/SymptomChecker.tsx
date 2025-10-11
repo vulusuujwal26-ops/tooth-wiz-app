@@ -1,46 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const SymptomChecker = () => {
+  const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState("");
   const [recommendation, setRecommendation] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
-  const handleAnalyze = () => {
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setUser(session.user);
+    } else {
+      toast.error("Please sign in to use symptom checker");
+      navigate("/auth");
+    }
+  };
+
+  const handleAnalyze = async () => {
     if (!symptoms.trim()) {
       toast.error("Please describe your symptoms");
       return;
     }
 
-    setIsAnalyzing(true);
-    
-    // Simulate AI analysis with a delay
-    setTimeout(() => {
-      const mockRecommendation = generateMockRecommendation(symptoms);
-      setRecommendation(mockRecommendation);
-      setIsAnalyzing(false);
-      toast.success("Analysis complete");
-    }, 2000);
-  };
+    if (!user) {
+      toast.error("Please sign in first");
+      navigate("/auth");
+      return;
+    }
 
-  const generateMockRecommendation = (symptomText: string): string => {
-    const lowerSymptoms = symptomText.toLowerCase();
-    
-    if (lowerSymptoms.includes("pain") || lowerSymptoms.includes("ache")) {
-      return "Based on your symptoms, you may be experiencing dental sensitivity or early signs of a cavity. We recommend:\n\n• Schedule a dental examination within the next week\n• Avoid very hot or cold foods temporarily\n• Use a toothpaste designed for sensitive teeth\n• Maintain regular brushing and flossing\n\nNote: This is a preliminary assessment. Please consult with a dentist for proper diagnosis.";
+    setIsAnalyzing(true);
+    toast.info("Analyzing your symptoms with AI...");
+
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "ai-treatment-recommendation",
+        {
+          body: { symptoms },
+        }
+      );
+
+      if (error) throw error;
+
+      setRecommendation(data.recommendation);
+
+      // Note: Treatment will be linked to appointment later
+      console.log("AI recommendation generated successfully");
+
+      toast.success("Analysis complete!");
+    } catch (error: any) {
+      console.error("Error analyzing symptoms:", error);
+      toast.error("Error analyzing symptoms");
+    } finally {
+      setIsAnalyzing(false);
     }
-    
-    if (lowerSymptoms.includes("bleed") || lowerSymptoms.includes("gum")) {
-      return "Your symptoms suggest possible gum inflammation (gingivitis). We recommend:\n\n• Schedule a dental cleaning and checkup\n• Use an antiseptic mouthwash\n• Brush gently but thoroughly twice daily\n• Floss carefully once per day\n• Consider a softer toothbrush\n\nNote: This is a preliminary assessment. Please consult with a dentist for proper diagnosis.";
-    }
-    
-    return "Based on your description, we recommend:\n\n• Schedule a comprehensive dental examination\n• Continue with regular oral hygiene practices\n• Monitor your symptoms and note any changes\n• Avoid self-medication\n\nA professional evaluation will help determine the exact cause and appropriate treatment.\n\nNote: This is a preliminary assessment. Please consult with a dentist for proper diagnosis.";
   };
 
   return (

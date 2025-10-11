@@ -1,42 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 const Booking = () => {
+  const navigate = useNavigate();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
     reason: "",
     time: "",
   });
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setUser(session.user);
+    } else {
+      toast.error("Please sign in to book an appointment");
+      navigate("/auth");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.phone || !date || !formData.time) {
-      toast.error("Please fill in all required fields");
+    if (!formData.time || !date || !user) {
+      toast.error("Please select a date and time");
       return;
     }
 
-    toast.success("Appointment request submitted! We'll confirm via email shortly.");
-    
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      reason: "",
-      time: "",
-    });
-    setDate(undefined);
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.from("appointments").insert([
+        {
+          patient_id: user.id,
+          appointment_date: date.toISOString().split('T')[0],
+          appointment_time: formData.time,
+          reason: formData.reason || null,
+          status: "pending",
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast.success("Appointment request submitted successfully!");
+      
+      setFormData({
+        reason: "",
+        time: "",
+      });
+      setDate(new Date());
+      
+      setTimeout(() => navigate("/dashboard"), 1500);
+    } catch (error: any) {
+      toast.error("Error submitting appointment");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const timeSlots = [
@@ -61,42 +95,13 @@ const Booking = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {user && (
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm">Booking for: <strong>{user.email}</strong></p>
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="John Doe"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="john@example.com"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="(555) 123-4567"
-                  required
-                />
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="time">Preferred Time *</Label>
                 <select
@@ -140,7 +145,8 @@ const Booking = () => {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full shadow-elevated hover:scale-[1.02] transition-transform">
+            <Button type="submit" size="lg" className="w-full shadow-elevated hover:scale-[1.02] transition-transform" disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Request Appointment
             </Button>
           </form>

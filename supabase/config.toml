@@ -1,1 +1,4 @@
 project_id = "dyvneeqghjzbidlszait"
+
+[functions.ai-treatment-recommendation]
+verify_jwt = false

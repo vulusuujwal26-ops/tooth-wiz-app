@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, FileText, Bell, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import NotificationPanel from "./NotificationPanel";
 
 interface PatientDashboardProps {
   userId: string;
@@ -70,6 +71,8 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
           </Link>
         </div>
       </div>
+
+      <NotificationPanel userId={userId} />
 
       {upcomingAppointments.length > 0 && (
         <Card className="border-primary bg-primary/5">

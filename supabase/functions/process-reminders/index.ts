@@ -59,13 +59,28 @@ serve(async (req) => {
     const processedReminders = [];
     for (const reminder of reminders) {
       try {
-        // In a production system, you would send an actual email/SMS here
-        // For now, we'll just log the reminder details
         const appointmentData = reminder.appointments as any;
         const profileData = reminder.profiles as any;
         
-        console.log(`Sending ${reminder.reminder_type} reminder to ${profileData.email}`);
+        console.log(`Processing ${reminder.reminder_type} reminder for ${profileData.email}`);
         console.log(`Appointment: ${appointmentData.appointment_date} at ${appointmentData.appointment_time}`);
+        
+        // Create in-app notification
+        const timeLabel = reminder.reminder_type === '24h_before' ? '24 hours' : '1 hour';
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: reminder.patient_id,
+            title: `Appointment Reminder - ${timeLabel}`,
+            message: `Your dental appointment is scheduled for ${new Date(appointmentData.appointment_date).toLocaleDateString()} at ${appointmentData.appointment_time}. ${appointmentData.reason ? `Reason: ${appointmentData.reason}` : ''}`,
+            type: 'reminder'
+          });
+
+        if (notificationError) {
+          console.error(`Error creating notification:`, notificationError);
+        } else {
+          console.log(`Notification created for user ${reminder.patient_id}`);
+        }
         
         // Mark reminder as sent
         const { error: updateError } = await supabase
@@ -77,7 +92,7 @@ serve(async (req) => {
           console.error(`Error marking reminder ${reminder.id} as sent:`, updateError);
         } else {
           processedReminders.push(reminder.id);
-          console.log(`Reminder ${reminder.id} marked as sent`);
+          console.log(`Reminder ${reminder.id} processed successfully`);
         }
       } catch (error) {
         console.error(`Error processing reminder ${reminder.id}:`, error);

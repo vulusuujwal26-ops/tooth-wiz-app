@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Users, Calendar, FileText, Activity } from "lucide-react";
+import { Users, Calendar, FileText, Activity, Shield } from "lucide-react";
 
 interface AdminDashboardProps {
   userId: string;
@@ -58,6 +60,17 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
     }
   };
 
+  const promoteToAdmin = async (email: string) => {
+    try {
+      const { error } = await supabase.rpc('promote_user_to_admin', { user_email: email });
+      if (error) throw error;
+      toast.success("User promoted to admin successfully");
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Error promoting user to admin");
+    }
+  };
+
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
       // Delete existing role
@@ -81,6 +94,39 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Admin Dashboard</h2>
+
+      <Card className="border-primary">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Promote User to Admin
+          </CardTitle>
+          <CardDescription>Enter email address of existing user to grant admin access</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const email = formData.get('email') as string;
+            if (email) {
+              promoteToAdmin(email);
+              e.currentTarget.reset();
+            }
+          }} className="flex gap-4 items-end">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="admin-email">User Email</Label>
+              <Input
+                id="admin-email"
+                name="email"
+                type="email"
+                placeholder="user@example.com"
+                required
+              />
+            </div>
+            <Button type="submit">Promote to Admin</Button>
+          </form>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

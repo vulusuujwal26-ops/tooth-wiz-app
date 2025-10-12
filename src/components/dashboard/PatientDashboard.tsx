@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Bell } from "lucide-react";
+import { Calendar, FileText, Bell, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -47,6 +47,10 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
     }
   };
 
+  const upcomingAppointments = appointments.filter(
+    (apt) => new Date(apt.appointment_date) >= new Date() && apt.status === 'confirmed'
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -66,6 +70,36 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
           </Link>
         </div>
       </div>
+
+      {upcomingAppointments.length > 0 && (
+        <Card className="border-primary bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Upcoming Appointments
+            </CardTitle>
+            <CardDescription>You'll receive reminders 24h and 1h before</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {upcomingAppointments.map((apt) => (
+                <div key={apt.id} className="flex items-center justify-between p-2 rounded">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">
+                      {new Date(apt.appointment_date).toLocaleDateString()}
+                    </span>
+                    <span className="text-sm text-muted-foreground">at {apt.appointment_time}</span>
+                  </div>
+                  <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                    Confirmed
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>

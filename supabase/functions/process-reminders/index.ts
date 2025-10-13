@@ -31,10 +31,6 @@ serve(async (req) => {
           appointment_date,
           appointment_time,
           reason
-        ),
-        profiles (
-          full_name,
-          email
         )
       `)
       .eq('sent', false)
@@ -60,9 +56,15 @@ serve(async (req) => {
     for (const reminder of reminders) {
       try {
         const appointmentData = reminder.appointments as any;
-        const profileData = reminder.profiles as any;
         
-        console.log(`Processing ${reminder.reminder_type} reminder for ${profileData.email}`);
+        // Fetch profile separately
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', reminder.patient_id)
+          .single();
+        
+        console.log(`Processing ${reminder.reminder_type} reminder for patient ${reminder.patient_id}`);
         console.log(`Appointment: ${appointmentData.appointment_date} at ${appointmentData.appointment_time}`);
         
         // Create in-app notification

@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowLeft, Sparkles } from "lucide-react";
+import { symptomSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const SymptomChecker = () => {
   const navigate = useNavigate();
@@ -30,25 +32,23 @@ const SymptomChecker = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!symptoms.trim()) {
-      toast.error("Please describe your symptoms");
-      return;
-    }
-
-    if (!user) {
-      toast.error("Please sign in first");
-      navigate("/auth");
-      return;
-    }
-
-    setIsAnalyzing(true);
-    toast.info("Analyzing your symptoms with AI...");
-
     try {
+      // Validate input
+      const validatedData = symptomSchema.parse({ symptoms });
+
+      if (!user) {
+        toast.error("Please sign in first");
+        navigate("/auth");
+        return;
+      }
+
+      setIsAnalyzing(true);
+      toast.info("Analyzing your symptoms with AI...");
+
       const { data, error } = await supabase.functions.invoke(
         "ai-treatment-recommendation",
         {
-          body: { symptoms },
+          body: { symptoms: validatedData.symptoms },
         }
       );
 
@@ -56,13 +56,13 @@ const SymptomChecker = () => {
 
       setRecommendation(data.recommendation);
 
-      // Note: Treatment will be linked to appointment later
-      console.log("AI recommendation generated successfully");
-
       toast.success("Analysis complete!");
     } catch (error: any) {
-      console.error("Error analyzing symptoms:", error);
-      toast.error("Error analyzing symptoms");
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0].message);
+      } else {
+        toast.error(error.message || "Error analyzing symptoms");
+      }
     } finally {
       setIsAnalyzing(false);
     }

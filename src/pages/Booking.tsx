@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { bookingSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const Booking = () => {
   const navigate = useNavigate();
@@ -35,21 +37,29 @@ const Booking = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.time || !date || !user) {
-      toast.error("Please select a date and time");
-      return;
-    }
-
-    setLoading(true);
 
     try {
+      // Validate input
+      const validatedData = bookingSchema.parse({
+        time: formData.time,
+        reason: formData.reason,
+        date: date,
+      });
+
+      if (!user) {
+        toast.error("Please sign in to book an appointment");
+        navigate("/auth");
+        return;
+      }
+
+      setLoading(true);
+
       const { error } = await supabase.from("appointments").insert([
         {
           patient_id: user.id,
-          appointment_date: date.toISOString().split('T')[0],
-          appointment_time: formData.time,
-          reason: formData.reason || null,
+          appointment_date: validatedData.date.toISOString().split('T')[0],
+          appointment_time: validatedData.time,
+          reason: validatedData.reason || null,
           status: "pending",
         },
       ]);
@@ -66,8 +76,11 @@ const Booking = () => {
       
       setTimeout(() => navigate("/dashboard"), 1500);
     } catch (error: any) {
-      toast.error("Error submitting appointment");
-      console.error(error);
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0].message);
+      } else {
+        toast.error(error.message || "Error submitting appointment");
+      }
     } finally {
       setLoading(false);
     }

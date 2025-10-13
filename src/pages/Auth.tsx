@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { signUpSchema, signInSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -28,14 +30,17 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      // Validate input
+      const validatedData = signUpSchema.parse(signUpData);
+
       const { error } = await supabase.auth.signUp({
-        email: signUpData.email,
-        password: signUpData.password,
+        email: validatedData.email,
+        password: validatedData.password,
         options: {
           emailRedirectTo: `${window.location.origin}/dashboard`,
           data: {
-            full_name: signUpData.fullName,
-            phone: signUpData.phone,
+            full_name: validatedData.fullName,
+            phone: validatedData.phone || "",
           },
         },
       });
@@ -45,7 +50,11 @@ const Auth = () => {
       toast.success("Account created successfully!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || "Error creating account");
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0].message);
+      } else {
+        toast.error(error.message || "Error creating account");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -56,9 +65,12 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      // Validate input
+      const validatedData = signInSchema.parse(signInData);
+
       const { error } = await supabase.auth.signInWithPassword({
-        email: signInData.email,
-        password: signInData.password,
+        email: validatedData.email,
+        password: validatedData.password,
       });
 
       if (error) throw error;
@@ -66,7 +78,11 @@ const Auth = () => {
       toast.success("Signed in successfully!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || "Error signing in");
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0].message);
+      } else {
+        toast.error(error.message || "Error signing in");
+      }
     } finally {
       setIsLoading(false);
     }

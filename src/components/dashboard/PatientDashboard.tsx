@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Bell, Clock } from "lucide-react";
+import { Calendar, FileText, Bell, Clock, FileHeart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import NotificationPanel from "./NotificationPanel";
+import { ReviewForm } from "@/components/reviews/ReviewForm";
 
 interface PatientDashboardProps {
   userId: string;
@@ -14,6 +15,7 @@ interface PatientDashboardProps {
 const PatientDashboard = ({ userId }: PatientDashboardProps) => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [treatments, setTreatments] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
 
   const fetchData = async () => {
     try {
-      const [appointmentsData, treatmentsData] = await Promise.all([
+      const [appointmentsData, treatmentsData, reviewsData] = await Promise.all([
         supabase
           .from("appointments")
           .select("*")
@@ -33,13 +35,20 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
           .select("*")
           .eq("patient_id", userId)
           .order("created_at", { ascending: false }),
+        supabase
+          .from("reviews")
+          .select("*")
+          .eq("patient_id", userId)
+          .order("created_at", { ascending: false }),
       ]);
 
       if (appointmentsData.error) throw appointmentsData.error;
       if (treatmentsData.error) throw treatmentsData.error;
+      if (reviewsData.error) throw reviewsData.error;
 
       setAppointments(appointmentsData.data || []);
       setTreatments(treatmentsData.data || []);
+      setReviews(reviewsData.data || []);
     } catch (error: any) {
       toast.error("Error loading data");
       console.error(error);
@@ -52,11 +61,17 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
     (apt) => new Date(apt.appointment_date) >= new Date() && apt.status === 'confirmed'
   );
 
+  const completedAppointmentsWithoutReview = appointments.filter(
+    (apt) => 
+      apt.status === 'completed' && 
+      !reviews.some(review => review.appointment_id === apt.id)
+  ).slice(0, 1);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold">My Dashboard</h2>
-        <div className="space-x-2">
+        <div className="flex flex-wrap gap-2">
           <Link to="/booking">
             <Button>
               <Calendar className="mr-2 h-4 w-4" />
@@ -69,10 +84,37 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
               Check Symptoms
             </Button>
           </Link>
+          <Link to="/medical-records">
+            <Button variant="secondary">
+              <FileHeart className="mr-2 h-4 w-4" />
+              Medical Records
+            </Button>
+          </Link>
         </div>
       </div>
 
       <NotificationPanel userId={userId} />
+
+      {completedAppointmentsWithoutReview.length > 0 && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5" />
+              Rate Your Recent Visit
+            </CardTitle>
+            <CardDescription>
+              Help us improve by sharing your experience
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ReviewForm
+              appointmentId={completedAppointmentsWithoutReview[0].id}
+              dentistId={completedAppointmentsWithoutReview[0].dentist_id}
+              onReviewSubmitted={fetchData}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {upcomingAppointments.length > 0 && (
         <Card className="border-primary bg-primary/5">

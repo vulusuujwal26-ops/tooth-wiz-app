@@ -53,6 +53,113 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_history: {
+        Row: {
+          allergies: string | null
+          blood_type: string | null
+          created_at: string | null
+          current_medications: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          has_diabetes: boolean | null
+          has_heart_disease: boolean | null
+          has_high_blood_pressure: boolean | null
+          id: string
+          insurance_policy_number: string | null
+          insurance_provider: string | null
+          is_pregnant: boolean | null
+          is_smoker: boolean | null
+          medical_conditions: string | null
+          past_dental_procedures: string | null
+          patient_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          allergies?: string | null
+          blood_type?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          has_diabetes?: boolean | null
+          has_heart_disease?: boolean | null
+          has_high_blood_pressure?: boolean | null
+          id?: string
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          is_pregnant?: boolean | null
+          is_smoker?: boolean | null
+          medical_conditions?: string | null
+          past_dental_procedures?: string | null
+          patient_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          allergies?: string | null
+          blood_type?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          has_diabetes?: boolean | null
+          has_heart_disease?: boolean | null
+          has_high_blood_pressure?: boolean | null
+          id?: string
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          is_pregnant?: boolean | null
+          is_smoker?: boolean | null
+          medical_conditions?: string | null
+          past_dental_procedures?: string | null
+          patient_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      medical_images: {
+        Row: {
+          appointment_id: string | null
+          created_at: string | null
+          description: string | null
+          file_name: string
+          file_path: string
+          file_type: string
+          id: string
+          patient_id: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_type: string
+          id?: string
+          patient_id: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_type?: string
+          id?: string
+          patient_id?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_images_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -144,6 +251,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "reminders_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          appointment_id: string
+          created_at: string | null
+          dentist_id: string | null
+          id: string
+          patient_id: string
+          rating: number
+          review_text: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string | null
+          dentist_id?: string | null
+          id?: string
+          patient_id: string
+          rating: number
+          review_text?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string | null
+          dentist_id?: string | null
+          id?: string
+          patient_id?: string
+          rating?: number
+          review_text?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_appointment_id_fkey"
             columns: ["appointment_id"]
             isOneToOne: false
             referencedRelation: "appointments"

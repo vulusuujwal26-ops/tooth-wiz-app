@@ -53,6 +53,50 @@ export type Database = {
         }
         Relationships: []
       }
+      consultations: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          dentist_id: string
+          ended_at: string | null
+          id: string
+          patient_id: string
+          room_url: string | null
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          dentist_id: string
+          ended_at?: string | null
+          id?: string
+          patient_id: string
+          room_url?: string | null
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          dentist_id?: string
+          ended_at?: string | null
+          id?: string
+          patient_id?: string
+          room_url?: string | null
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_history: {
         Row: {
           allergies: string | null
@@ -160,6 +204,44 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -189,6 +271,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          created_at: string
+          currency: string
+          id: string
+          patient_id: string
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          patient_id: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          patient_id?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

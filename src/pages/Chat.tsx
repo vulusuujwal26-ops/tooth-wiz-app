@@ -1,0 +1,67 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { ChatWindow } from "@/components/chat/ChatWindow";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
+export default function Chat() {
+  const [receiverId, setReceiverId] = useState<string>("");
+  const [receiverName, setReceiverName] = useState<string>("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      // For demo purposes, fetch a dentist or admin to chat with
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "dentist")
+        .limit(1)
+        .single();
+
+      if (roleData) {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", roleData.user_id)
+          .single();
+
+        setReceiverId(roleData.user_id);
+        setReceiverName(profileData?.full_name || "Dentist");
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-3xl font-bold">Messages</h1>
+        </div>
+
+        {receiverId && (
+          <ChatWindow
+            receiverId={receiverId}
+            receiverName={receiverName}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

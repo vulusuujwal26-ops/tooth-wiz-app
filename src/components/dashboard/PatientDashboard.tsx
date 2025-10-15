@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Bell, Clock, FileHeart, Star } from "lucide-react";
+import { Calendar, FileText, Bell, Clock, FileHeart, Star, MessageSquare, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import NotificationPanel from "./NotificationPanel";
@@ -88,6 +88,18 @@ const PatientDashboard = ({ userId }: PatientDashboardProps) => {
             <Button variant="secondary">
               <FileHeart className="mr-2 h-4 w-4" />
               Medical Records
+            </Button>
+          </Link>
+          <Link to="/chat">
+            <Button variant="outline">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Chat
+            </Button>
+          </Link>
+          <Link to="/payments">
+            <Button variant="outline">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Payments
             </Button>
           </Link>
         </div>

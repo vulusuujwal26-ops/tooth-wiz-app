@@ -10,6 +10,10 @@ import Dashboard from "./pages/Dashboard";
 import Booking from "./pages/Booking";
 import SymptomChecker from "./pages/SymptomChecker";
 import MedicalRecords from "./pages/MedicalRecords";
+import Chat from "./pages/Chat";
+import Payments from "./pages/Payments";
+import VideoConsultation from "./pages/VideoConsultation";
+import CalendarView from "./pages/CalendarView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +32,10 @@ const App = () => (
           <Route path="/booking" element={<Booking />} />
           <Route path="/symptom-checker" element={<SymptomChecker />} />
           <Route path="/medical-records" element={<MedicalRecords />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/video-consultation" element={<VideoConsultation />} />
+          <Route path="/calendar" element={<CalendarView />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

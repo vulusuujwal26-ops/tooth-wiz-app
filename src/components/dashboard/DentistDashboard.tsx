@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Check, X, Edit } from "lucide-react";
+import { Check, X, Edit, Calendar, Video } from "lucide-react";
 
 interface DentistDashboardProps {
   userId: string;
@@ -87,7 +87,19 @@ const DentistDashboard = ({ userId }: DentistDashboardProps) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Dentist Dashboard</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold">Dentist Dashboard</h2>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => window.location.href = "/calendar"}>
+            <Calendar className="mr-2 h-4 w-4" />
+            Calendar
+          </Button>
+          <Button variant="outline" onClick={() => window.location.href = "/video-consultation"}>
+            <Video className="mr-2 h-4 w-4" />
+            Video Call
+          </Button>
+        </div>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>

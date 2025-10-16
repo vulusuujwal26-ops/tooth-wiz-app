@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Users, Calendar, FileText, Activity, Shield } from "lucide-react";
+import { Users, Calendar, FileText, Activity, Shield, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface AdminDashboardProps {
   userId: string;
@@ -93,7 +94,15 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Admin Dashboard</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold">Admin Dashboard</h2>
+        <Link to="/admin">
+          <Button variant="default" size="lg">
+            <Settings className="mr-2 h-4 w-4" />
+            Open Admin Control Panel
+          </Button>
+        </Link>
+      </div>
 
       <Card className="border-primary">
         <CardHeader>

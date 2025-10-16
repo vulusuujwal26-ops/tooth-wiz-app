@@ -113,6 +113,28 @@ const Index = () => {
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-4 border-t bg-card">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground">
+              © 2025 DentalCare AI. All rights reserved.
+            </p>
+            <div className="flex gap-6">
+              <Link to="/auth" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Patient Portal
+              </Link>
+              <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
+              <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Admin
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

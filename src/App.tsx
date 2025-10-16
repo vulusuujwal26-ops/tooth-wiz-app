@@ -17,6 +17,7 @@ import CalendarView from "./pages/CalendarView";
 import Prescriptions from "./pages/Prescriptions";
 import Analytics from "./pages/Analytics";
 import Waitlist from "./pages/Waitlist";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/prescriptions" element={<Prescriptions />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/waitlist" element={<Waitlist />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

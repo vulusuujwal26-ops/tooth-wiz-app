@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Check, X, Edit, Calendar, Video } from "lucide-react";
+import { Check, X, Edit, Calendar, Video, BarChart3, ClipboardList, ListChecks } from "lucide-react";
 
 interface DentistDashboardProps {
   userId: string;
@@ -97,6 +97,14 @@ const DentistDashboard = ({ userId }: DentistDashboardProps) => {
           <Button variant="outline" onClick={() => window.location.href = "/video-consultation"}>
             <Video className="mr-2 h-4 w-4" />
             Video Call
+          </Button>
+          <Button variant="outline" onClick={() => window.location.href = "/analytics"}>
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Analytics
+          </Button>
+          <Button variant="outline" onClick={() => window.location.href = "/waitlist"}>
+            <ListChecks className="mr-2 h-4 w-4" />
+            Waitlist
           </Button>
         </div>
       </div>

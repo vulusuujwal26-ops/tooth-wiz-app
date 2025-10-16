@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_cache: {
+        Row: {
+          calculated_at: string
+          id: string
+          metric_name: string
+          metric_value: Json
+          period: string
+        }
+        Insert: {
+          calculated_at?: string
+          id?: string
+          metric_name: string
+          metric_value: Json
+          period: string
+        }
+        Update: {
+          calculated_at?: string
+          id?: string
+          metric_name?: string
+          metric_value?: Json
+          period?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_date: string
@@ -319,6 +343,62 @@ export type Database = {
           },
         ]
       }
+      prescriptions: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          dentist_id: string
+          dosage: string
+          duration: string
+          frequency: string
+          id: string
+          instructions: string | null
+          medication_name: string
+          patient_id: string
+          prescribed_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          dentist_id: string
+          dosage: string
+          duration: string
+          frequency: string
+          id?: string
+          instructions?: string | null
+          medication_name: string
+          patient_id: string
+          prescribed_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          dentist_id?: string
+          dosage?: string
+          duration?: string
+          frequency?: string
+          id?: string
+          instructions?: string | null
+          medication_name?: string
+          patient_id?: string
+          prescribed_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -434,7 +514,9 @@ export type Database = {
           ai_recommendation: string
           appointment_id: string | null
           created_at: string
+          currency: string | null
           dentist_notes: string | null
+          estimated_cost: number | null
           final_treatment: string | null
           id: string
           patient_id: string
@@ -447,7 +529,9 @@ export type Database = {
           ai_recommendation: string
           appointment_id?: string | null
           created_at?: string
+          currency?: string | null
           dentist_notes?: string | null
+          estimated_cost?: number | null
           final_treatment?: string | null
           id?: string
           patient_id: string
@@ -460,7 +544,9 @@ export type Database = {
           ai_recommendation?: string
           appointment_id?: string | null
           created_at?: string
+          currency?: string | null
           dentist_notes?: string | null
+          estimated_cost?: number | null
           final_treatment?: string | null
           id?: string
           patient_id?: string
@@ -496,6 +582,45 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      waitlist: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          patient_id: string
+          preferred_date: string | null
+          preferred_time: string | null
+          priority: string
+          reason: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          preferred_date?: string | null
+          preferred_time?: string | null
+          priority?: string
+          reason: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          preferred_date?: string | null
+          preferred_time?: string | null
+          priority?: string
+          reason?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }

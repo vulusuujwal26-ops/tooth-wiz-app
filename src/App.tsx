@@ -14,6 +14,9 @@ import Chat from "./pages/Chat";
 import Payments from "./pages/Payments";
 import VideoConsultation from "./pages/VideoConsultation";
 import CalendarView from "./pages/CalendarView";
+import Prescriptions from "./pages/Prescriptions";
+import Analytics from "./pages/Analytics";
+import Waitlist from "./pages/Waitlist";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
           <Route path="/payments" element={<Payments />} />
           <Route path="/video-consultation" element={<VideoConsultation />} />
           <Route path="/calendar" element={<CalendarView />} />
+          <Route path="/prescriptions" element={<Prescriptions />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/waitlist" element={<Waitlist />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

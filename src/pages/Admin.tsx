@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { WaitlistManager } from "@/components/waitlist/WaitlistManager";
 import { PrescriptionForm } from "@/components/prescriptions/PrescriptionForm";
+import { RoleManagement } from "@/components/admin/RoleManagement";
 import { 
   ArrowLeft, 
   BarChart3, 
@@ -227,17 +228,7 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>
-                  Manage user roles and permissions for staff and patients
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AdminDashboard userId={userId} />
-              </CardContent>
-            </Card>
+            <RoleManagement />
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-4">

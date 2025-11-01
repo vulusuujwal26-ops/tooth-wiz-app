@@ -629,6 +629,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_user_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -640,9 +647,22 @@ export type Database = {
         Args: { user_email: string }
         Returns: undefined
       }
+      remove_user_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      app_role: "admin" | "dentist" | "patient"
+      app_role:
+        | "admin"
+        | "dentist"
+        | "patient"
+        | "receptionist"
+        | "nurse"
+        | "manager"
       appointment_status: "pending" | "confirmed" | "completed" | "cancelled"
       treatment_status: "recommended" | "approved" | "modified" | "rejected"
     }
@@ -772,7 +792,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "dentist", "patient"],
+      app_role: [
+        "admin",
+        "dentist",
+        "patient",
+        "receptionist",
+        "nurse",
+        "manager",
+      ],
       appointment_status: ["pending", "confirmed", "completed", "cancelled"],
       treatment_status: ["recommended", "approved", "modified", "rejected"],
     },

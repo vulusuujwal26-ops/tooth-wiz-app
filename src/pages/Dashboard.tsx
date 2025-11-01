@@ -11,7 +11,8 @@ import { Loader2 } from "lucide-react";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [primaryRole, setPrimaryRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,11 +47,27 @@ const Dashboard = () => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
-        .single();
+        .eq("user_id", userId);
 
       if (error) throw error;
-      setRole(data.role);
+      
+      const userRoles = data?.map(r => r.role) || [];
+      setRoles(userRoles);
+      
+      // Determine primary role based on hierarchy: admin > dentist > manager > nurse > receptionist > patient
+      if (userRoles.includes('admin')) {
+        setPrimaryRole('admin');
+      } else if (userRoles.includes('dentist')) {
+        setPrimaryRole('dentist');
+      } else if (userRoles.includes('manager')) {
+        setPrimaryRole('manager');
+      } else if (userRoles.includes('nurse')) {
+        setPrimaryRole('nurse');
+      } else if (userRoles.includes('receptionist')) {
+        setPrimaryRole('receptionist');
+      } else if (userRoles.includes('patient')) {
+        setPrimaryRole('patient');
+      }
     } catch (error) {
       console.error("Error fetching role:", error);
       toast.error("Error loading dashboard");
@@ -86,9 +103,9 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {role === "patient" && <PatientDashboard userId={user.id} />}
-        {role === "dentist" && <DentistDashboard userId={user.id} />}
-        {role === "admin" && <AdminDashboard userId={user.id} />}
+        {primaryRole === "admin" && <AdminDashboard userId={user.id} />}
+        {primaryRole === "dentist" && <DentistDashboard userId={user.id} />}
+        {(primaryRole === "patient" || primaryRole === "receptionist" || primaryRole === "nurse" || primaryRole === "manager") && <PatientDashboard userId={user.id} />}
       </main>
     </div>
   );

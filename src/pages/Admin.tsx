@@ -88,11 +88,25 @@ export default function Admin() {
       color: "text-blue-500"
     },
     {
+      title: "User Management",
+      description: "Manage user roles and permissions",
+      icon: Users,
+      href: "/admin",
+      color: "text-indigo-500"
+    },
+    {
       title: "Calendar Management",
       description: "Manage all appointments and schedules",
       icon: Calendar,
       href: "/calendar",
       color: "text-green-500"
+    },
+    {
+      title: "Waitlist Management",
+      description: "Review and manage patient waitlist",
+      icon: ListChecks,
+      href: "/waitlist",
+      color: "text-cyan-500"
     },
     {
       title: "Video Consultations",
@@ -107,6 +121,13 @@ export default function Admin() {
       icon: MessageSquare,
       href: "/chat",
       color: "text-orange-500"
+    },
+    {
+      title: "Medical Records",
+      description: "Access all patient medical records",
+      icon: FileText,
+      href: "/medical-records",
+      color: "text-pink-500"
     },
     {
       title: "Payment Management",
@@ -183,31 +204,24 @@ export default function Admin() {
 
         {/* Main Admin Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="waitlist">Waitlist</TabsTrigger>
-            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="appointments">Appointments</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
-            <AdminDashboard userId={userId} />
-          </TabsContent>
-
-          <TabsContent value="analytics" className="space-y-4">
-            <AnalyticsDashboard />
-          </TabsContent>
-
-          <TabsContent value="waitlist" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Waitlist Management</CardTitle>
+                <CardTitle>System Overview</CardTitle>
                 <CardDescription>
-                  Manage patient waitlist entries
+                  Quick overview of clinic operations and statistics
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <WaitlistManager />
+                <AdminDashboard userId={userId} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -217,11 +231,64 @@ export default function Admin() {
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
                 <CardDescription>
-                  Manage user roles and permissions
+                  Manage user roles and permissions for staff and patients
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <AdminDashboard userId={userId} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Analytics Dashboard</CardTitle>
+                <CardDescription>
+                  View detailed system analytics and performance metrics
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AnalyticsDashboard />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="waitlist" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Waitlist Management</CardTitle>
+                <CardDescription>
+                  Manage patient waitlist entries and appointments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <WaitlistManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="appointments" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Appointment Management</CardTitle>
+                <CardDescription>
+                  View and manage all clinic appointments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Calendar className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">
+                    Access the full calendar view to manage appointments
+                  </p>
+                  <Button asChild>
+                    <Link to="/calendar">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Open Calendar
+                    </Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -20,7 +19,6 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
     totalTreatments: 0,
     pendingAppointments: 0,
   });
-  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,24 +27,16 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
 
   const fetchData = async () => {
     try {
-      const [profilesData, appointmentsData, treatmentsData, userRolesData] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, email"),
+      const [profilesData, appointmentsData, treatmentsData] = await Promise.all([
+        supabase.from("profiles").select("id"),
         supabase.from("appointments").select("id, status"),
         supabase.from("treatments").select("id"),
-        supabase.from("user_roles").select("user_id, role"),
       ]);
 
       if (profilesData.error) throw profilesData.error;
       if (appointmentsData.error) throw appointmentsData.error;
       if (treatmentsData.error) throw treatmentsData.error;
-      if (userRolesData.error) throw userRolesData.error;
 
-      const usersWithRoles = profilesData.data.map((profile) => ({
-        ...profile,
-        role: userRolesData.data.find((r) => r.user_id === profile.id)?.role || "patient",
-      }));
-
-      setUsers(usersWithRoles);
       setStats({
         totalUsers: profilesData.data.length,
         totalAppointments: appointmentsData.data.length,
@@ -72,36 +62,14 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string) => {
-    try {
-      // Delete existing role
-      await supabase.from("user_roles").delete().eq("user_id", userId);
-
-      // Insert new role
-      const { error } = await supabase
-        .from("user_roles")
-        .insert([{ user_id: userId, role: newRole as "admin" | "dentist" | "patient" }]);
-
-      if (error) throw error;
-
-      toast.success("User role updated");
-      fetchData();
-    } catch (error: any) {
-      toast.error("Error updating role");
-      console.error(error);
-    }
-  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div>
         <h2 className="text-3xl font-bold">Admin Dashboard</h2>
-        <Link to="/admin">
-          <Button variant="default" size="lg">
-            <Settings className="mr-2 h-4 w-4" />
-            Open Admin Control Panel
-          </Button>
-        </Link>
+        <p className="text-muted-foreground mt-2">
+          Quick overview and essential admin functions
+        </p>
       </div>
 
       <Card className="border-primary">
@@ -179,42 +147,43 @@ const AdminDashboard = ({ userId }: AdminDashboardProps) => {
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-primary/20">
         <CardHeader>
-          <CardTitle>User Management</CardTitle>
-          <CardDescription>Manage user roles and permissions</CardDescription>
+          <CardTitle>Advanced Management</CardTitle>
+          <CardDescription>
+            Access the full admin control panel for comprehensive system management
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <div className="space-y-4">
-              {users.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium">{user.full_name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                  </div>
-                  <Select
-                    value={user.role}
-                    onValueChange={(value) => updateUserRole(user.id, value)}
-                  >
-                    <SelectTrigger className="w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="patient">Patient</SelectItem>
-                      <SelectItem value="dentist">Dentist</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              The Admin Control Panel provides access to:
+            </p>
+            <ul className="text-sm space-y-2 ml-4">
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                Advanced user role management with multiple role assignments
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                Detailed analytics and system metrics
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                Waitlist and appointment management
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary"></span>
+                Quick access to all system features
+              </li>
+            </ul>
+            <Link to="/admin" className="block">
+              <Button variant="default" size="lg" className="w-full">
+                <Settings className="mr-2 h-4 w-4" />
+                Open Admin Control Panel
+              </Button>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -72,11 +72,36 @@ export const AppointmentCalendar = () => {
     }
 
     const calendarEvents: CalendarEvent[] = (data || []).map((apt) => {
-      const [hours, minutes] = apt.appointment_time.split(":").map(Number);
+      // Parse time - handle both "HH:MM" and "HH:MM AM/PM" formats
+      const timeStr = apt.appointment_time.trim();
+      let hours = 0;
+      let minutes = 0;
+      
+      if (timeStr.includes("AM") || timeStr.includes("PM")) {
+        // 12-hour format with AM/PM
+        const isPM = timeStr.includes("PM");
+        const timeOnly = timeStr.replace(/AM|PM/gi, "").trim();
+        const [hourStr, minStr] = timeOnly.split(":");
+        hours = parseInt(hourStr);
+        minutes = parseInt(minStr);
+        
+        // Convert to 24-hour format
+        if (isPM && hours !== 12) {
+          hours += 12;
+        } else if (!isPM && hours === 12) {
+          hours = 0;
+        }
+      } else {
+        // 24-hour format
+        const [hourStr, minStr] = timeStr.split(":");
+        hours = parseInt(hourStr);
+        minutes = parseInt(minStr);
+      }
+      
       const startDate = new Date(apt.appointment_date);
-      startDate.setHours(hours, minutes);
+      startDate.setHours(hours, minutes, 0, 0);
       const endDate = new Date(startDate);
-      endDate.setHours(hours + 1, minutes);
+      endDate.setHours(hours + 1, minutes, 0, 0);
 
       return {
         id: apt.id,

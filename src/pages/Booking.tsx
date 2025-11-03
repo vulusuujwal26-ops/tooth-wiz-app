@@ -91,6 +91,10 @@ const Booking = () => {
     "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
   ];
 
+  // Only disable past days (allow selecting today)
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
   return (
     <div className="min-h-screen bg-gradient-subtle py-12 px-4">
       <div className="container mx-auto max-w-4xl">
@@ -152,7 +156,11 @@ const Booking = () => {
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  disabled={(date) => date < new Date()}
+                  disabled={(d) => d < startOfToday}
+                  numberOfMonths={2}
+                  captionLayout="dropdown"
+                  fromYear={new Date().getFullYear()}
+                  toYear={new Date().getFullYear() + 1}
                   className="rounded-md"
                 />
               </div>

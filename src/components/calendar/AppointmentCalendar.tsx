@@ -196,8 +196,9 @@ export const AppointmentCalendar = () => {
             onEventDrop={handleEventDrop}
             onSelectEvent={(event) => setSelectedEvent(event)}
             draggableAccessor={() => canManageAppointments}
-            defaultView={Views.WEEK}
+            defaultView={Views.MONTH}
             views={[Views.MONTH, Views.WEEK, Views.DAY]}
+            popup
             style={{ height: "100%" }}
           />
         </div>

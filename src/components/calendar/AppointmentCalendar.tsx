@@ -98,10 +98,10 @@ export const AppointmentCalendar = () => {
         minutes = parseInt(minStr);
       }
       
-      const startDate = new Date(apt.appointment_date);
-      startDate.setHours(hours, minutes, 0, 0);
-      const endDate = new Date(startDate);
-      endDate.setHours(hours + 1, minutes, 0, 0);
+      // Parse date in local timezone to avoid timezone offset issues
+      const [year, month, day] = apt.appointment_date.split("-").map(Number);
+      const startDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+      const endDate = new Date(year, month - 1, day, hours + 1, minutes, 0, 0);
 
       return {
         id: apt.id,

@@ -157,7 +157,7 @@ const Booking = () => {
                   selected={date}
                   onSelect={setDate}
                   disabled={(d) => d < startOfToday}
-                  numberOfMonths={2}
+                  numberOfMonths={1}
                   captionLayout="dropdown"
                   fromYear={new Date().getFullYear()}
                   toYear={new Date().getFullYear() + 1}
